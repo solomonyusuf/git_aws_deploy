@@ -1,0 +1,44 @@
+name: Upload to S3 via Lambda
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y curl jq
+
+    - name: Upload files to Lambda API with folder structure
+      run: |
+        # Loop through HTML, PNG, JPG, and CSS files
+        for file in $(find . -type f \( -name '*.html' -o -name '*.png' -o -name '*.jpg' -o -name '*.css' \)); do
+          # Remove the leading ./ from path to preserve folder structure
+          s3path=${file#./}
+
+          # Base64 encode the file (remove newlines)
+          base64content=$(base64 "$file" | tr -d '\n')
+
+          # Detect content type (basic)
+          case "${file##*.}" in
+            html) contentType="text/html" ;;
+            png)  contentType="image/png" ;;
+            jpg|jpeg) contentType="image/jpeg" ;;
+            css) contentType="text/css" ;;
+            *) contentType="application/octet-stream" ;;
+          esac
+
+          # Call our Lambda API
+          curl -X POST "https://exigalxwd8.execute-api.eu-north-1.amazonaws.com/upload" \
+            -H "Content-Type: application/json" \
+            -d "{\"fileName\":\"$s3path\",\"fileContent\":\"$base64content\",\"contentType\":\"$contentType\"}"
+        done
