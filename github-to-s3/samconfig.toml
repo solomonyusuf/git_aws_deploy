@@ -1,9 +1,10 @@
 version = 0.1
 
 [default.deploy.parameters]
-stack_name = "github-to-s3-stack"
-resolve_s3 = true
-s3_prefix = "github-to-s3-stack"
+stack_name = "github-to-s3"
+resolve_s3 = false
+s3_prefix = "github-to-s3"
+region = "eu-north-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
 image_repositories = []

@@ -11,7 +11,6 @@ Globals:
       - x86_64
     Environment:
       Variables:
-        AWS_REGION: eu-north-1
         BUCKET_NAME: my-lambda-website-bucket
 
 Resources:
@@ -25,7 +24,7 @@ Resources:
   GithubToS3Function:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: github_to_s3
+      FunctionName: github_to_s3_deploy
       CodeUri: src/
       Handler: app.handler
       Description: Uploads files to S3 via API Gateway
